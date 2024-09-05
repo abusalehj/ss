@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معلومات اللاعب</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: black;
+        }
+
+        .header-text {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            color: red;
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 5;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid red;
+            animation: typing 3s steps(30, end), blink-caret 0.75s step-end infinite;
+            display: none;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: red; }
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            display: none; /* إخفاء الفيديو في البداية */
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 3; /* النصوص في المقدمة */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .timer {
+            font-size: 50px;
+            font-weight: bold;
+            color: yellow;
+            background-color: transparent; /* تعيين الخلفية إلى شفافة */
+            padding: 20px;
+            border-radius: 10px;
+            display: block;
+            z-index: 4; /* النصوص في المقدمة */
+        }
+
+        .info-box {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            background-color: transparent; /* تعيين الخلفية إلى شفافة */
+            text-align: center;
+            z-index: 4; /* النصوص في المقدمة */
+            display: none;
+        }
+
+        .info-box p {
+            margin: 10px 0;
+            color: red;
+            font-size: 24px;
+            font-weight: bold;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid red;
+            animation: typing-info 5s steps(40, end), blink-caret-info 0.75s step-end infinite;
+        }
+
+        @keyframes typing-info {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret-info {
+            from, to { border-color: transparent; }
+            50% { border-color: red; }
+        }
+
+        .moving-text {
+            position: absolute;
+            top: 60px;
+            left: 100%;
+            color: red; /* تغيير اللون إلى الأحمر */
+            font-size: 30px;
+            font-weight: bold;
+            white-space: nowrap;
+            animation: move-text 10s linear infinite;
+            z-index: 4; /* النصوص في المقدمة */
+            display: none; /* إخفاء النص المتحرك عند تحميل الصفحة */
+        }
+
+        @keyframes move-text {
+            from {
+                left: 100%;
+            }
+            to {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="moving-text" id="movingText">https://discord.gg/5-1</div>
+
+<div class="header-text" id="headerText">PSYCHO</div>
+
+<div class="video-background" id="videoBackground">
+    <video id="video" autoplay muted loop>
+        <source src="https://cdn.discordapp.com/attachments/1281146121770500156/1281146162417766431/savetik.mov?ex=66daa7d7&is=66d95657&hm=c33241a8247ce31694efbc17e727f4499b0a32a75953b99fb2c49218e8231a18&" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<div class="content">
+    <div class="timer" id="timer">2</div> <!-- المؤقت يبدأ من 2 -->
+</div>
+
+<div class="info-box" id="infoBox">
+    <p id="ipAddress">IP Address: </p>
+    <p id="currentTime">Current Time: </p>
+    <p id="location">Location: </p>
+</div>
+
+<audio id="audio" preload="auto" loop>
+    <source src="https://cdn.discordapp.com/attachments/1271987747225075712/1273080876745621515/-_._1.mp3?ex=66da5175&is=66d8fff5&hm=a51a1baa05b7d74d05bddf9fd62ef0b12fd99f33214b5d338d98c1e045147e85&" type="audio/mp3">
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+    let timerValue = 2; // المؤقت يبدأ من 2
+    const timerElement = document.getElementById('timer');
+    const videoBackgroundElement = document.getElementById('videoBackground');
+    const audioElement = document.getElementById('audio');
+    const infoBoxElement = document.getElementById('infoBox');
+    const headerTextElement = document.getElementById('headerText');
+    const movingTextElement = document.getElementById('movingText');
+    const ipAddressElement = document.getElementById('ipAddress');
+    const currentTimeElement = document.getElementById('currentTime');
+    const locationElement = document.getElementById('location');
+
+    function updateTimer() {
+        if (timerValue > 0) {
+            timerElement.innerText = timerValue;
+            timerValue--;
+        } else {
+            timerElement.style.display = 'none'; // إخفاء التايمر عند انتهاء العد
+            videoBackgroundElement.style.display = 'block'; // عرض الفيديو بعد انتهاء العد
+            audioElement.play(); // تشغيل الصوت بعد انتهاء العد
+            infoBoxElement.style.display = 'block'; // عرض المعلومات بعد انتهاء العد
+            headerTextElement.style.display = 'block'; // عرض النص بعد انتهاء العد
+            movingTextElement.style.display = 'block'; // عرض النص المتحرك بعد انتهاء العد
+            fetchData(); // جلب البيانات
+            clearInterval(timerInterval); // إيقاف التايمر
+        }
+    }
+
+    let timerInterval = setInterval(updateTimer, 1000); // بدء التايمر عند تحميل الصفحة
+
+    function fetchData() {
+        // للحصول على عنوان IP
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                ipAddressElement.innerText = `IP Address: ${data.ip}`;
+            })
+            .catch(error => {
+                console.error('Error fetching IP address:', error);
+            });
+
+        // للحصول على الموقع بدون مفتاح API
+        fetch('https://ipinfo.io/json')
+            .then(response => response.json())
+            .then(data => {
+                if (data.city && data.region && data.country) {
+                    locationElement.innerText = `Location: ${data.city}, ${data.region}, ${data.country}`;
+                } else {
+                    locationElement.innerText = 'Location: Unavailable';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching location:', error);
+                locationElement.innerText = 'Location: Error';
+            });
+
+        // للحصول على الوقت الحالي
+        const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        currentTimeElement.innerText = `Current Time: ${currentTime}`;
+    }
+</script>
+
+</body>
+</html>
